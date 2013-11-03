@@ -9,10 +9,11 @@
 #import <Foundation/Foundation.h>
 #import "DCObjectMapping.h"
 @interface DCArrayMapping : NSObject
+typedef id(^DCArrayMappingBlock)(__weak NSString *attributeName, __weak Class destinationClass, __weak id value);
 
 @property(nonatomic, readonly) DCObjectMapping *objectMapping;
 @property(nonatomic, readonly) Class classForElementsOnArray;
-
+@property(nonatomic, strong) DCArrayMappingBlock mappingBlock;
 
 + (DCArrayMapping *) mapperForClassElements: (Class) classForElementsOnArray 
                                forAttribute: (NSString *) attribute 

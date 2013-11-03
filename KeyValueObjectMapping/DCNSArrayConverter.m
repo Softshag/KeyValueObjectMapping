@@ -37,12 +37,24 @@
     if (!values || values == [NSNull null] || [values count] == 0) {
         return nil;
     }
-    
+    DCArrayMapping *mapper = [self.configuration arrayMapperForMapper:attribute.objectMapping];
     BOOL primitiveArray = ![[[values objectAtIndex:0] class] isSubclassOfClass:[NSDictionary class]];
     if (primitiveArray) {
+        
+        
+        NSMutableArray *array = [NSMutableArray arrayWithCapacity:[(NSArray*)values count]];
+        if (mapper && mapper.mappingBlock) {
+            for (id val in values) {
+                id nVal = mapper.mappingBlock(attribute.objectMapping.attributeName, mapper.classForElementsOnArray,val);
+                if (nVal) {
+                    [array addObject:nVal];
+                }
+            }
+            return array.copy;
+        }
+
         return [self parsePrimitiveValues:values dictionary:dictionary parentObject:parentObject];
     } else {
-        DCArrayMapping *mapper = [self.configuration arrayMapperForMapper:attribute.objectMapping];
         if (mapper) {
             DCKeyValueObjectMapping *parser = [DCKeyValueObjectMapping mapperForClass:mapper.classForElementsOnArray andConfiguration:self.configuration];
             return [parser parseArray:values forParentObject:parentObject];
